@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: stock-game
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn run:app
+    envVars:
+      - key: FLASK_ENV
+        value: production

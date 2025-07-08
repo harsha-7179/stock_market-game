@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register | Stock Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            color: #00ffff;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: none;
+            background-color: #f1f1f1;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .flash {
+            background-color: #ffc107;
+            color: #222;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        #strength {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .weak { color: #dc3545; }
+        .medium { color: #ffc107; }
+        .strong { color: #28a745; }
+
+        a {
+            display: block;
+            margin-top: 12px;
+            color: #00ffff;
+            font-size: 14px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>📝 Create Your Account</h2>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash">
+                    {% for msg in messages %}
+                        {{ msg }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" id="password" placeholder="Password" required>
+            <div id="strength">Password Strength: <span id="strengthText" class="weak">Too Weak</span></div>
+            <button type="submit">Register</button>
+        </form>
+
+        <a href="{{ url_for('login') }}">Already have an account? Login</a>
+        <a href="{{ url_for('home') }}">← Back to Home</a>
+    </div>
+
+    <script>
+        const password = document.getElementById("password");
+        const strengthText = document.getElementById("strengthText");
+
+        password.addEventListener("input", () => {
+            const value = password.value;
+            let strength = 0;
+
+            if (value.length >= 8) strength++;
+            if (/[a-z]/.test(value)) strength++;
+            if (/[A-Z]/.test(value)) strength++;
+            if (/[0-9]/.test(value)) strength++;
+            if (/[\W_]/.test(value)) strength++;
+
+            if (strength <= 2) {
+                strengthText.textContent = "Weak";
+                strengthText.className = "weak";
+            } else if (strength <= 4) {
+                strengthText.textContent = "Medium";
+                strengthText.className = "medium";
+            } else {
+                strengthText.textContent = "Strong";
+                strengthText.className = "strong";
+            }
+        });
+    </script>
+</body>
+</html>

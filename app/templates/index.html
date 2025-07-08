@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome | Stock Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .branding {
+            margin-bottom: 20px;
+        }
+        .branding h1 {
+            font-size: 42px;
+            color: #00ffff;
+            margin: 0;
+        }
+        .branding p {
+            font-size: 16px;
+            color: #ccc;
+            margin: 5px 0 20px;
+        }
+        .box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 90%;
+        }
+        .box h2 {
+            font-size: 28px;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+        .box p {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-register {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-login {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn:hover {
+            opacity: 0.85;
+        }
+        .disclaimer {
+            font-size: 12px;
+            margin-top: 25px;
+            color: #bbb;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Branding Section -->
+    <div class="branding">
+        <h1>StockGame</h1>
+        <p>Your Virtual Trading Playground</p>
+    </div>
+
+    <!-- Box Section -->
+    <div class="box">
+        <h2>📈 Welcome to the Stock Game!</h2>
+        <p>This is a simulation game. No real money is used. Prices are randomly generated.</p>
+
+        <a href="{{ url_for('register') }}" class="btn btn-register">Register</a>
+        <a href="{{ url_for('login') }}" class="btn btn-login">Login</a>
+
+        <div class="disclaimer">
+            ⚠️ This is a simulation. No real money or real stocks involved.
+        </div>
+
+        <div class="footer">
+            &copy; 2025 Stock Game | Protected under Digital Copyright Act 2025.
+        </div>
+    </div>
+</body>
+</html>

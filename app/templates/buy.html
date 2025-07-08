@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Buy Stocks</title>
+    <style>
+        body { font-family: Arial; background: #f0f0f0; padding: 20px; }
+        .container { background: white; padding: 20px; border-radius: 10px; }
+        form { margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Buy Stocks</h2>
+        <a href="{{ url_for('dashboard') }}">⬅ Back to Dashboard</a>
+        <ul>
+        {% for name, price in stocks.items() %}
+            <li>
+                <form method="POST" action="{{ url_for('buy') }}">
+                    <strong>{{ name }}:</strong> ₹{{ price }}
+                    <input type="hidden" name="stock" value="{{ name }}">
+                    <input type="hidden" name="price" value="{{ price }}">
+                    <input type="number" name="shares" min="1" placeholder="Qty" required>
+                    <button type="submit">Buy</button>
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

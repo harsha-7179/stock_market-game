@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Game Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 30px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .flex {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background: #007bff;
+            color: white;
+        }
+        button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button.buy { background-color: #28a745; color: white; }
+        button.sell { background-color: #dc3545; color: white; }
+
+        .popup {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            z-index: 9999;
+            animation: slideDownFade 4s ease-in-out forwards;
+        }
+        .popup.level-up { background-color: #28a745; }
+        .popup.level-down { background-color: #dc3545; }
+
+        @keyframes slideDownFade {
+            0% { top: -100px; opacity: 0; }
+            20% { top: 30px; opacity: 1; }
+            80% { top: 30px; opacity: 1; }
+            100% { top: -100px; opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div style="background: #fff3cd; color: #856404; padding: 12px; text-align: center; font-weight: bold; border-bottom: 2px solid #ffeeba;">
+        ⚠️ This is a simulation platform. No real money is involved. For educational purposes only.
+    </div>
+
+    <div class="container">
+
+        <!-- ✅ Header Logo -->
+        <body>
+        
+
+    <div class="container">
+        <div style="text-align: center; margin-top: 20px; margin-bottom: 30px;">
+            <h1 style="font-family: 'Segoe UI', sans-serif; color: #00ffff; font-size: 42px; margin: 0;">
+                📊 StockGame
+            </h1>
+            <p style="color: #444; font-size: 16px; margin-top: 8px;">
+                Your Virtual Trading Playground - Learn. Trade. Level Up.
+            </p>
+        </div>
+
+        <!-- continue with popup and cards -->
+
+
+        {% if popup_message %}
+        <div id="popup" class="popup {{ popup_class }}">
+            {{ popup_message }}
+        </div>
+        {% endif %}
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, msg in messages %}
+                <div style="background: #e2e3e5; color: #383d41; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
+                    {{ msg }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <h2 class="title">Welcome, {{ user.username }} 👋</h2>
+            <div class="flex">
+                <div>
+                    <p><strong>💰 Balance:</strong> ₹{{ balance }}</p>
+                    <p><strong>📈 Level:</strong> {{ level }}</p>
+                    <p><strong>💹 Total Earnings:</strong> 
+                        <span style="color: {{ 'green' if total_earnings >= 0 else 'red' }};">
+                            ₹{{ total_earnings }}
+                        </span>
+                    </p>
+                </div>
+                <div>
+                    <a href="{{ url_for('logout') }}" class="btn" style="background:#6c757d;">Logout</a>
+                    <a href="{{ url_for('reset') }}" class="btn" style="background:#ffc107;">Reset Portfolio</a>
+                    
+
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="title">Your Holdings</h3>
+            {% if holdings %}
+            <table>
+                <thead><tr><th>Stock</th><th>Quantity</th></tr></thead>
+                <tbody>
+                    {% for stock, qty in holdings.items() %}
+                    <tr><td>{{ stock }}</td><td>{{ qty }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No holdings yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h3 class="title">Live Prices</h3>
+            <table>
+                <thead><tr><th>Stock</th><th>Price</th><th>Buy</th><th>Sell</th></tr></thead>
+                <tbody>
+                    {% for name, price in stocks.items() %}
+                    <tr>
+                        <td>{{ name }}</td>
+                        <td>₹{{ price }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('buy') }}">
+                                <input type="hidden" name="stock" value="{{ name }}">
+                                <input type="hidden" name="price" value="{{ price }}">
+                                <input type="number" name="shares" min="1" placeholder="Qty" required>
+                                <button class="buy" type="submit">Buy</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" action="{{ url_for('sell') }}">
+                                <input type="hidden" name="stock" value="{{ name }}">
+                                <input type="hidden" name="price" value="{{ price }}">
+                                <input type="number" name="shares" min="1" placeholder="Qty" required>
+                                <button class="sell" type="submit">Sell</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3 class="title">📊 Recent Transactions</h3>
+            {% if transactions %}
+            <table>
+                <thead><tr><th>Stock</th><th>Type</th><th>Shares</th><th>Price</th><th>Date</th></tr></thead>
+                <tbody>
+                    {% for txn in transactions %}
+                    <tr>
+                        <td>{{ txn.stock_name }}</td>
+                        <td style="color: {{ 'green' if txn.type == 'BUY' else 'red' }};">
+                            {% if txn.type == 'BUY' %}🟢 Buy{% else %}🔴 Sell{% endif %}
+                        </td>
+                        <td>{{ txn.shares }}</td>
+                        <td>₹{{ txn.price }}</td>
+                        <td>{{ txn.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No recent transactions.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h3 class="title">📈 Earnings Chart</h3>
+            <canvas id="earningsChart"></canvas>
+        </div>
+
+    </div>
+
+    <script>
+        const labels = {{ chart_labels | tojson }};
+        const dataPoints = {{ chart_data | tojson }};
+        const ctx = document.getElementById('earningsChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Earnings',
+                    data: dataPoints,
+                    backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                    borderColor: '#007bff',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
+    <!-- Delete Account Button at Bottom -->
+<div style="text-align: center; margin: 40px 0;">
+    <form method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('⚠️ Are you sure you want to delete your account permanently?');">
+        <button type="submit" class="btn" style="background-color: #dc3545; color: white;">🗑️ Delete My Account</button>
+    </form>
+</div>
+
+
+    <footer style="text-align:center; padding: 10px 0; color: #666; font-size: 14px;">
+        © 2025 | Protected under <strong>Copyright Act 2025</strong>. All rights reserved.
+    </footer>
+
+</body>
+</html>
